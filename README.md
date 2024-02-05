@@ -22,12 +22,10 @@ Follow these steps to get the project up and running on your local machine:
 2. **Install Dependencies:**
 
 ```bash
-Copy code
 npm install
 Run the App:
 ```
 ```bash
-Copy code
 expo start
 ```
 This will start the Expo development server and provide you with options to run the app on an emulator or a physical device.
