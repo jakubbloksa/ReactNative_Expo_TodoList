@@ -1,23 +1,24 @@
 import React, { useState } from "react";
 import {
-  Keyboard,
   KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   View,
+  Platform,
+  Keyboard,
 } from "react-native";
 import Task from "./components/Task";
 
 export default function App() {
-  const [task, setTask] = useState();
+  const [task, setTask] = useState("");
   const [taskItems, setTaskItems] = useState([]);
-
   const handleAddTask = () => {
-    // Keyboard.dismiss();
+    if (task.trim() === "") return;
+    Keyboard.dismiss();
     setTaskItems([...taskItems, task]);
-    setTask(null);
+    setTask("");
   };
 
   const completeTask = (index) => {
@@ -28,25 +29,22 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {/* <Text>Hello!</Text> */}
       <View style={styles.tasksWrapper}>
         <Text style={styles.sectionTitle}>Today's tasks</Text>
 
         <View style={styles.items}>
           {taskItems.map((item, index) => {
             return (
-              <TouchableOpacity
+              <Pressable
                 key={index}
                 onPress={() => {
                   completeTask(index);
                 }}
               >
                 <Task text={item} />
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
-          {/* <Task text="Task1" />
-          <Task text="Task2" /> */}
         </View>
       </View>
       <KeyboardAvoidingView
@@ -59,11 +57,11 @@ export default function App() {
           value={task}
           onChangeText={(text) => setTask(text)}
         />
-        <TouchableOpacity onPress={() => handleAddTask()}>
+        <Pressable onPress={() => handleAddTask()}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </KeyboardAvoidingView>
     </View>
   );
@@ -73,8 +71,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E8EAED",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
   tasksWrapper: { paddingTop: 80, paddingHorizontal: 20 },
   sectionTitle: {

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
 const Task = (props) => {
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   circular: {
     width: 12,
     height: 12,
+    backgroundColor: "#55BCF6", // Add this line
     borderColor: "#55BCF6",
     borderWidth: 2,
     borderRadius: 5,
