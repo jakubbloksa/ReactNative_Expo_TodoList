@@ -14,8 +14,14 @@ import Task from "./components/Task";
 export default function App() {
   const [task, setTask] = useState("");
   const [taskItems, setTaskItems] = useState([]);
+  const [error, setError] = useState(""); // New state for error message
+
   const handleAddTask = () => {
-    if (task.trim() === "") return;
+    if (task.trim() === "") {
+      setError("Task cannot be empty!"); // Set error message
+      return;
+    }
+    setError(""); // Clear error when valid task is added
     Keyboard.dismiss();
     setTaskItems([...taskItems, task]);
     setTask("");
@@ -47,6 +53,7 @@ export default function App() {
           })}
         </View>
       </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "android" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
@@ -57,12 +64,14 @@ export default function App() {
           value={task}
           onChangeText={(text) => setTask(text)}
         />
-        <Pressable onPress={() => handleAddTask()}>
+        <Pressable onPress={handleAddTask}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
           </View>
         </Pressable>
       </KeyboardAvoidingView>
+
+      {error.length > 0 && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
@@ -105,5 +114,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#C0C0C0",
     borderWidth: 1,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
   },
 });
