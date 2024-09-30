@@ -8,23 +8,56 @@ import {
   View,
   Platform,
   Keyboard,
+  Switch,
+  Button,
 } from "react-native";
 import Task from "./components/Task";
 
 export default function App() {
   const [task, setTask] = useState("");
+  const [isImportant, setIsImportant] = useState(false);
   const [taskItems, setTaskItems] = useState([]);
+  const [error, setError] = useState("");
+  const [isEnditing, setIsEditing] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [tempState, setTempState] = useState("");
+
+  React.useEffect(() => {
+    const componentWillMount = () => {};
+    componentWillMount();
+  }, []);
+
   const handleAddTask = () => {
-    if (task.trim() === "") return;
-    Keyboard.dismiss();
-    setTaskItems([...taskItems, task]);
+    if (task.trim() === "") {
+      setError("Task cannot be empty!");
+      return;
+    }
+
+    if (isEnditing) {
+      const updatedTasks = [...taskItems];
+      updatedTasks[editIndex] = { task, isImportant };
+      setTaskItems(updatedTasks);
+      setIsEditing(false);
+      setEditIndex(null);
+    } else {
+      taskItems.push({ task, isImportant });
+      setTaskItems(taskItems);
+    }
+
     setTask("");
+    setIsImportant(false);
   };
 
   const completeTask = (index) => {
-    let itemCopy = [...taskItems];
-    itemCopy.splice(index, 1);
-    setTaskItems(itemCopy);
+    taskItems.splice(index, 1);
+    setTaskItems(taskItems);
+  };
+
+  const editTask = (index) => {
+    setTask(taskItems[index].task);
+    setIsImportant(taskItems[index].isImportant);
+    setIsEditing(true);
+    setEditIndex(index);
   };
 
   return (
@@ -33,20 +66,19 @@ export default function App() {
         <Text style={styles.sectionTitle}>Today's tasks</Text>
 
         <View style={styles.items}>
-          {taskItems.map((item, index) => {
-            return (
-              <Pressable
-                key={index}
-                onPress={() => {
-                  completeTask(index);
-                }}
-              >
-                <Task text={item} />
+          {taskItems.map((item, index) => (
+            <View key={index} style={styles.taskItem}>
+              <Pressable onPress={() => completeTask(index)}>
+                <Task text={item.task} isImportant={item.isImportant} />
               </Pressable>
-            );
-          })}
+              <Pressable onPress={() => editTask(index)}>
+                <Text style={styles.editText}>Edit</Text>
+              </Pressable>
+            </View>
+          ))}
         </View>
       </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "android" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
@@ -57,12 +89,21 @@ export default function App() {
           value={task}
           onChangeText={(text) => setTask(text)}
         />
-        <Pressable onPress={() => handleAddTask()}>
+        <View style={styles.switchWrapper}>
+          <Text>Important: </Text>
+          <Switch
+            value={isImportant}
+            onValueChange={() => setIsImportant(!isImportant)}
+          />
+        </View>
+        <Pressable onPress={handleAddTask}>
           <View style={styles.addWrapper}>
-            <Text style={styles.addText}>+</Text>
+            <Text style={styles.addText}>{isEnditing ? "Update" : "+"}</Text>
           </View>
         </Pressable>
       </KeyboardAvoidingView>
+
+      {error.length > 0 && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
@@ -78,7 +119,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   items: { marginTop: 30 },
-
+  taskItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  editText: {
+    color: "blue",
+    textDecorationLine: "underline",
+  },
   writeTaskWrapper: {
     position: "absolute",
     bottom: 40,
@@ -94,7 +143,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderColor: "#C0C0C0",
     borderWidth: 1,
-    width: 250,
+    width: 200,
   },
   addWrapper: {
     width: 60,
@@ -105,5 +154,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#C0C0C0",
     borderWidth: 1,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  switchWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  addText: {
+    fontSize: 24,
   },
 });

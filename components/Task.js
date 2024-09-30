@@ -3,7 +3,7 @@ import React from "react";
 
 const Task = (props) => {
   return (
-    <View style={styles.item}>
+    <View style={[styles.item, props.isImportant && styles.importantTask]}>
       <View style={styles.itemLeft}>
         <View style={styles.square}></View>
         <Text style={styles.itemText}>{props.text}</Text>
@@ -25,6 +25,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
+  importantTask: {
+    borderColor: "red",
+    borderWidth: 2,
+  },
   itemLeft: { flexDirection: "row", alignItems: "center", flexWrap: "wrap" },
   square: {
     width: 24,
@@ -40,7 +44,7 @@ const styles = StyleSheet.create({
   circular: {
     width: 12,
     height: 12,
-    backgroundColor: "#55BCF6", // Add this line
+    backgroundColor: "#55BCF6",
     borderColor: "#55BCF6",
     borderWidth: 2,
     borderRadius: 5,
